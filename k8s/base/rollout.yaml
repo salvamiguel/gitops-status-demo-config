@@ -1,14 +1,9 @@
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
 metadata:
   name: gitops-status-demo
 spec:
   replicas: 1
-  strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxUnavailable: 1
-      maxSurge: 1
   selector:
     matchLabels:
       app: gitops-status-demo
@@ -38,3 +33,15 @@ spec:
             limits:
               cpu: "100m"
               memory: "128Mi"
+  strategy:
+    canary:
+      canaryService: status-demo-canary
+      stableService: status-demo-stable
+      steps:
+        - setWeight: 10
+        - pause: { duration: 30s }
+        - setWeight: 25
+        - pause: { duration: 30s }
+        - setWeight: 50
+        - pause: { duration: 30s }
+        - setWeight: 100

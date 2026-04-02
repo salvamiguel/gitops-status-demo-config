@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: gitops-status-demo
+  name: status-demo-stable
 spec:
   type: ClusterIP
   selector:
