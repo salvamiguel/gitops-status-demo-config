@@ -9,7 +9,7 @@ namespace: status-dev
 patches:
   - path: patch-replicas.yaml
     target:
-      kind: Deployment
+      kind: Rollout
       name: gitops-status-demo
 
 configMapGenerator:

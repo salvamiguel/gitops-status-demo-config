@@ -7,7 +7,7 @@ spec:
   project: default
   source:
     repoURL: https://github.com/salvamiguel/gitops-status-demo-config
-    targetRevision: HEAD
+    targetRevision: strategy/blue-green
     path: k8s/overlays/staging
   destination:
     server: https://kubernetes.default.svc

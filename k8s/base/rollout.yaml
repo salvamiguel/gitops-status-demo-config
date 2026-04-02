@@ -1,14 +1,9 @@
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
 metadata:
   name: gitops-status-demo
 spec:
   replicas: 1
-  strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxUnavailable: 1
-      maxSurge: 1
   selector:
     matchLabels:
       app: gitops-status-demo
@@ -38,3 +33,9 @@ spec:
             limits:
               cpu: "100m"
               memory: "128Mi"
+  strategy:
+    blueGreen:
+      activeService: status-demo-active
+      previewService: status-demo-preview
+      autoPromotionEnabled: false
+      scaleDownDelaySeconds: 30
