@@ -29,15 +29,20 @@ apps: ## Apply ArgoCD Applications
 	kubectl apply -f argocd/
 	@echo "Applications created. Run 'make status' to check sync state."
 
-port-forward: ## Port-forward ArgoCD UI (8443) and app (8080)
-	@echo "ArgoCD UI:  https://localhost:8443  (admin / password from 'make argocd')"
-	@echo "App (dev):  http://localhost:8080"
+port-forward: ## Port-forward ArgoCD UI (8443) and apps (8080/8081/8082)
+	@echo "ArgoCD UI:      https://localhost:8443  (admin / password from 'make argocd')"
+	@echo "App (dev):      http://localhost:8080"
+	@echo "App (staging):  http://localhost:8081"
+	@echo "App (prod):     http://localhost:8082"
 	@echo ""
 	@echo "Press Ctrl+C to stop."
 	@kubectl port-forward svc/argocd-server -n argocd 8443:443 > /dev/null 2>&1 &
+	@kubectl port-forward svc/gitops-status-demo -n status-dev 8080:80 > /dev/null 2>&1 &
+	@kubectl port-forward svc/gitops-status-demo -n status-staging 8081:80 > /dev/null 2>&1 &
+	@kubectl port-forward svc/gitops-status-demo -n status-prod 8082:80 > /dev/null 2>&1 &
 	@sleep 2
-	@kubectl port-forward svc/gitops-status-demo -n status-dev 8080:80 2>/dev/null || \
-		echo "App not deployed yet. Waiting for ArgoCD to sync..."
+	@echo "All port-forwards started. Press Ctrl+C and run 'pkill -f port-forward' to stop."
+	@wait
 
 status: ## Show ArgoCD application status
 	@echo "=== ArgoCD Applications ==="

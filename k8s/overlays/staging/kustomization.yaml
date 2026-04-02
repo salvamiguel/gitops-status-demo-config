@@ -16,4 +16,4 @@ configMapGenerator:
   - name: app-config
     literals:
       - ENV=staging
-      - APP_COLOR=yellow
+      - APP_COLOR=orange
