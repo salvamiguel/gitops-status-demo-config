@@ -14,9 +14,20 @@ Kubernetes manifests and ArgoCD configuration for [gitops-status-demo-app](https
 
 ```bash
 make cluster    # Create kind cluster
-make argocd     # Install ArgoCD (prints admin password)
+make argocd     # Install Argo CD v3.5.3 (prints admin password)
 make apps       # Create ArgoCD Applications (dev, staging, prod)
 make port-forward  # Access ArgoCD UI (localhost:8443) and app (localhost:8080)
+```
+
+### Installing Argo CD by hand
+
+The Makefile pins Argo CD `v3.5.3`. Argo CD 3 must be installed with server-side apply, because some of its CRDs are too large for the `last-applied-configuration` annotation used by a plain `kubectl apply`:
+
+```bash
+kubectl create namespace argocd
+kubectl apply -n argocd --server-side --force-conflicts \
+  -f https://raw.githubusercontent.com/argoproj/argo-cd/v3.5.3/manifests/install.yaml
+argocd admin initial-password -n argocd   # admin password
 ```
 
 ## Environments

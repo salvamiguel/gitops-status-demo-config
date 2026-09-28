@@ -1,6 +1,6 @@
 CLUSTER_NAME   := gitops-demo
 KIND_CONFIG    := kind-config.yaml
-ARGOCD_VERSION := v2.13.3
+ARGOCD_VERSION := v3.5.3
 
 .PHONY: cluster argocd apps port-forward status rollouts clean help
 
@@ -13,9 +13,10 @@ cluster: ## Create kind cluster
 	kubectl wait --for=condition=Ready nodes --all --timeout=120s
 	@echo "Cluster $(CLUSTER_NAME) is ready."
 
+# Argo CD 3 CRDs exceed the annotation size limit of client-side apply, so install server-side.
 argocd: ## Install ArgoCD and print admin password
 	kubectl create namespace argocd --dry-run=client -o yaml | kubectl apply -f -
-	kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/$(ARGOCD_VERSION)/manifests/install.yaml
+	kubectl apply -n argocd --server-side --force-conflicts -f https://raw.githubusercontent.com/argoproj/argo-cd/$(ARGOCD_VERSION)/manifests/install.yaml
 	@echo "Waiting for ArgoCD pods to be ready (this may take a few minutes)..."
 	kubectl wait --for=condition=Ready pods --all -n argocd --timeout=300s
 	@echo ""
